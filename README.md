@@ -1,6 +1,6 @@
 # Self as System
 
-A React + Vite app that visualizes my Reddit upvote history. Posts are grouped into themes like Nature & science, Humor, and Visual oddities, shown as interactive donut charts and a ranked topic map. A timeline filters by year, and clicking a theme or subreddit narrows the post list.
+A React + Vite site that visualizes my Reddit upvote history. Posts are grouped into themes like Nature & science, Humor, and Visual oddities, shown as interactive donut charts and a ranked topic map. A timeline filters by year, and clicking a theme or subreddit narrows the post list.
 
 **[View it live](https://kaylenzheng02.github.io/Self-As-System/share/)**
 
