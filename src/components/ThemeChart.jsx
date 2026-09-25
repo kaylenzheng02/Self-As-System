@@ -4,7 +4,7 @@ import { themes, colorFor } from '../data/themes'
 const SIZE = 200
 const STROKE = 38
 
-function ThemeDonut({ theme, counts }) {
+function ThemeDonut({ theme, counts, postTotal }) {
   const [selected, setSelected] = useState(null)
 
   function toggle(sub) {
@@ -25,6 +25,10 @@ function ThemeDonut({ theme, counts }) {
   const circumference = 2 * Math.PI * r
   const hasSelection = selected != null
   const focused = slices.find((slice) => slice.sub === selected)
+  const percent = (n, of) => Math.round((n / of) * 100)
+  const shown = focused
+    ? percent(focused.n, total)
+    : percent(total, postTotal)
 
   let acc = 0
 
@@ -56,8 +60,7 @@ function ThemeDonut({ theme, counts }) {
                 onClick={() => toggle(slice.sub)}
               >
                 <title>
-                  {slice.sub}: {slice.n} {slice.n === 1 ? 'post' : 'posts'} (
-                  {Math.round((slice.n / total) * 100)}%)
+                  {slice.sub}: {percent(slice.n, total)}%
                 </title>
               </circle>
             )
@@ -67,7 +70,7 @@ function ThemeDonut({ theme, counts }) {
         </g>
         <foreignObject x={c - hole / 2} y={c - hole / 2} width={hole} height={hole}>
           <div className="pie-center">
-            <span className="pie-total">{focused ? focused.n : total}</span>
+            <span className="pie-total">{shown}%</span>
           </div>
         </foreignObject>
       </svg>
@@ -95,7 +98,12 @@ export default function ThemeChart({ posts }) {
   return (
     <div className="pie-grid">
       {cards.map((theme) => (
-        <ThemeDonut key={theme.name} theme={theme} counts={counts} />
+        <ThemeDonut
+          key={theme.name}
+          theme={theme}
+          counts={counts}
+          postTotal={posts.length}
+        />
       ))}
     </div>
   )
