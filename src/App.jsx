@@ -48,15 +48,18 @@ function App() {
       </header>
 
       <section className="panel">
-        <h2>Pie Chart Visualization</h2>
-        <p className="hint">Each theme broken down by subreddit. Click a slice to view more details.</p>
-        <ThemeChart posts={posts} />
+        <h2>Themes</h2>
+        <p className="hint">
+          Each theme broken down by subreddit. Click a theme or slice to filter the list
+          below.
+        </p>
+        <ThemeChart posts={inYear} focus={focus} onFocus={toggleFocus} />
       </section>
 
       <section className="panel">
-        <h2>Topics of  Interest</h2>
+        <h2>Topics of Interest</h2>
         <p className="hint">
-          {`The number next to each subreddit is how many posts I've upvoted${year != null ? ` from ${year}` : ''}.`}
+          {`Counts are posts upvoted${year != null ? ` in ${year}` : ''}. A theme’s percentage is its share of these posts; a subreddit’s percentage is its share of that theme.`}
         </p>
         <InterestMap posts={inYear} focus={focus} onFocus={toggleFocus} />
       </section>

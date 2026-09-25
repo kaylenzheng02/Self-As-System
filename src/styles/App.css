@@ -79,9 +79,23 @@ button:focus-visible,
   font-weight: 600;
 }
 
-.map-theme-total {
+.stat {
+  display: inline-flex;
+  flex: none;
+  gap: 10px;
   color: var(--text);
   font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-n {
+  min-width: 3ch;
+  text-align: right;
+}
+
+.stat-pct {
+  min-width: 3.2em;
+  text-align: right;
 }
 
 .sub-list {
@@ -125,9 +139,8 @@ button:focus-visible,
 
 .pie-grid {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 32px;
 }
 
 .pie-card {
@@ -137,12 +150,13 @@ button:focus-visible,
 }
 
 .pie-title {
-  margin: 0 0 8px;
-  font-family: var(--heading);
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-h);
-  text-align: center;
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+
+  .map-theme-name {
+    margin-bottom: 8px;
+  }
 }
 
 .pie-chart {

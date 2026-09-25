@@ -1,5 +1,10 @@
 import { allThemes, colorFor, themeFor } from '../data/themes'
 
+function percent(n, of) {
+  if (!of) return 0
+  return Math.round((n / of) * 100)
+}
+
 function isFocused(focus, kind, value) {
   return focus?.kind === kind && focus.value === value
 }
@@ -44,7 +49,10 @@ export default function InterestMap({ posts, focus, onFocus }) {
             onClick={() => onFocus({ kind: 'theme', value: theme.name })}
           >
             {theme.name}
-            <span className="map-theme-total">{total}</span>
+            <span className="stat">
+              <span className="stat-n">{total}</span>
+              <span className="stat-pct">{percent(total, posts.length)}%</span>
+            </span>
           </button>
           <ul className="sub-list">
             {subs.map((sub) => (
@@ -56,7 +64,10 @@ export default function InterestMap({ posts, focus, onFocus }) {
                 >
                   <span className="swatch" style={{ background: colorFor(sub) }} />
                   <span className="sub-name">{sub}</span>
-                  <span className="sub-count">{counts[sub]}</span>
+                  <span className="stat">
+                    <span className="stat-n">{counts[sub]}</span>
+                    <span className="stat-pct">{percent(counts[sub], total)}%</span>
+                  </span>
                 </button>
               </li>
             ))}

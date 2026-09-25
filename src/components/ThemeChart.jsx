@@ -1,16 +1,20 @@
-import { useState } from 'react'
-import { themes, colorFor } from '../data/themes'
+import { themes, colorFor, themeFor } from '../data/themes'
 
 const SIZE = 200
 const STROKE = 38
 
-function ThemeDonut({ theme, counts, postTotal }) {
-  const [selected, setSelected] = useState(null)
+function percent(n, of) {
+  if (!of) return 0
+  return Math.round((n / of) * 100)
+}
 
-  function toggle(sub) {
-    setSelected((current) => (current === sub ? null : sub))
-  }
+function themeActive(focus, themeName) {
+  if (focus?.kind === 'theme') return focus.value === themeName
+  if (focus?.kind === 'subreddit') return themeFor(focus.value).name === themeName
+  return false
+}
 
+function ThemeDonut({ theme, counts, postTotal, focus, onFocus }) {
   const slices = theme.subreddits
     .map((sub) => ({ sub, color: colorFor(sub), n: counts[sub] ?? 0 }))
     .filter((slice) => slice.n > 0)
@@ -23,28 +27,37 @@ function ThemeDonut({ theme, counts, postTotal }) {
   const r = (SIZE - STROKE) / 2
   const hole = SIZE - 2 * STROKE
   const circumference = 2 * Math.PI * r
-  const hasSelection = selected != null
-  const focused = slices.find((slice) => slice.sub === selected)
-  const percent = (n, of) => Math.round((n / of) * 100)
-  const shown = focused
-    ? percent(focused.n, total)
-    : percent(total, postTotal)
+  const focused = slices.find(
+    (slice) => focus?.kind === 'subreddit' && slice.sub === focus.value,
+  )
+  const shown = focused ? percent(focused.n, total) : percent(total, postTotal)
 
   let acc = 0
 
   return (
     <section className="pie-card" style={{ '--c': theme.color }}>
-      <h3 className="pie-title">{theme.name}</h3>
+      <h3 className="pie-title">
+        <button
+          type="button"
+          className={`map-theme-name ${themeActive(focus, theme.name) ? 'active' : ''}`}
+          onClick={() => onFocus({ kind: 'theme', value: theme.name })}
+        >
+          {theme.name}
+          <span className="stat">
+            <span className="stat-pct">{percent(total, postTotal)}%</span>
+          </span>
+        </button>
+      </h3>
       <svg
         className="pie-chart"
         viewBox={`0 0 ${SIZE} ${SIZE}`}
         role="img"
-        aria-label={`${theme.name}: upvotes by subreddit`}
+        aria-label={`${theme.name}: ${percent(total, postTotal)}% of posts`}
       >
         <g transform={`rotate(-90 ${c} ${c})`}>
           {slices.map((slice) => {
             const len = (slice.n / total) * circumference
-            const dim = hasSelection && slice.sub !== selected
+            const dim = focused != null && slice.sub !== focused.sub
             const el = (
               <circle
                 key={slice.sub}
@@ -57,7 +70,7 @@ function ThemeDonut({ theme, counts, postTotal }) {
                 strokeDasharray={`${len} ${circumference - len}`}
                 strokeDashoffset={-acc}
                 className={`pie-slice ${dim ? 'dim' : ''}`}
-                onClick={() => toggle(slice.sub)}
+                onClick={() => onFocus({ kind: 'subreddit', value: slice.sub })}
               >
                 <title>
                   {slice.sub}: {percent(slice.n, total)}%
@@ -79,7 +92,7 @@ function ThemeDonut({ theme, counts, postTotal }) {
   )
 }
 
-export default function ThemeChart({ posts }) {
+export default function ThemeChart({ posts, focus, onFocus }) {
   const counts = {}
   for (const post of posts) {
     counts[post.subreddit] = (counts[post.subreddit] ?? 0) + 1
@@ -92,7 +105,7 @@ export default function ThemeChart({ posts }) {
     .sort((a, b) => totalFor(b) - totalFor(a))
 
   if (cards.length === 0) {
-    return <p className="empty">No posts here.</p>
+    return <p className="empty">No posts from this year.</p>
   }
 
   return (
@@ -103,6 +116,8 @@ export default function ThemeChart({ posts }) {
           theme={theme}
           counts={counts}
           postTotal={posts.length}
+          focus={focus}
+          onFocus={onFocus}
         />
       ))}
     </div>
