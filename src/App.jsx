@@ -17,20 +17,36 @@ const posts = upvotes.map((row) => ({
 }))
 
 function App() {
-  const [focus, setFocus] = useState(null)
+  const [selected, setSelected] = useState([])
   const [year, setYear] = useState(null)
 
-  const matchesFocus = focus
-    ? (p) => (focus.kind === 'theme' ? p.theme.name : p.subreddit) === focus.value
-    : null
   const inYear = year == null ? posts : posts.filter((p) => p.year === year)
   const shown = inYear
-    .filter((p) => !matchesFocus || matchesFocus(p))
+    .filter((p) => selected.length === 0 || selected.includes(p.subreddit))
     .sort((a, b) => (b.created ?? 0) - (a.created ?? 0))
 
-  function toggleFocus(next) {
-    setFocus((f) => (f?.kind === next.kind && f.value === next.value ? null : next))
+  function toggleSub(sub) {
+    setSelected((current) =>
+      current.includes(sub) ? current.filter((s) => s !== sub) : [...current, sub],
+    )
   }
+
+  function toggleTheme(subs) {
+    setSelected((current) => {
+      const allOn = subs.every((sub) => current.includes(sub))
+      if (allOn) return current.filter((sub) => !subs.includes(sub))
+      return [...new Set([...current, ...subs])]
+    })
+  }
+
+  const selectionLabel =
+    selected.length === 0
+      ? ''
+      : selected.length === 1
+        ? ` in ${selected[0]}`
+        : selected.length === 2
+          ? ` in ${selected[0]} and ${selected[1]}`
+          : ` in ${selected.length} subreddits`
 
   function toggleYear(next) {
     setYear((y) => (y === next ? null : next))
@@ -49,9 +65,14 @@ function App() {
       <section className="panel">
         <h2>Themes</h2>
         <p className="hint">
-          {`Each theme’s share of posts upvoted${year != null ? ` in ${year}` : ''}. Click a slice or subreddit to filter the list below.`}
+          {`Each theme’s share of posts upvoted${year != null ? ` in ${year}` : ''}. Click slices to combine them. Click again to remove one.`}
         </p>
-        <ThemeChart posts={inYear} focus={focus} onFocus={toggleFocus} />
+        <ThemeChart
+          posts={inYear}
+          selected={selected}
+          onToggle={toggleSub}
+          onToggleTheme={toggleTheme}
+        />
       </section>
 
       <section className="panel">
@@ -59,13 +80,13 @@ function App() {
         <p className="hint">Posts grouped by the year they were published.</p>
         <Timeline
           posts={posts}
-          focus={focus}
+          selected={selected}
           year={year}
           onYear={toggleYear}
           onClear={
-            focus || year != null
+            selected.length > 0 || year != null
               ? () => {
-                  setFocus(null)
+                  setSelected([])
                   setYear(null)
                 }
               : null
@@ -76,10 +97,10 @@ function App() {
       <section className="panel">
         <h2>
           {shown.length} {shown.length === 1 ? 'post' : 'posts'}
-          {focus && ` in ${focus.value}`}
+          {selectionLabel}
           {year != null && ` from ${year}`}
         </h2>
-        <PostList key={`${focus?.value}-${year}`} posts={shown} />
+        <PostList key={`${selected.join()}-${year}`} posts={shown} />
       </section>
     </main>
   )

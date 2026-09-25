@@ -7,38 +7,28 @@ const GAP = 8
 const OUTLINE_GAP = 3
 const MARGIN = 4
 
-function groupsFor(focus, dated) {
-  if (focus?.kind === 'subreddit') {
-    return [
-      {
-        key: focus.value,
-        color: colorFor(focus.value),
-        matches: (p) => p.subreddit === focus.value,
-      },
-    ]
-  }
-  if (focus?.kind === 'theme') {
-    const counts = {}
-    for (const p of dated) {
-      if (p.theme.name === focus.value) counts[p.subreddit] = (counts[p.subreddit] ?? 0) + 1
-    }
-    return Object.keys(counts)
-      .sort((a, b) => counts[b] - counts[a])
-      .map((sub) => ({ key: sub, color: colorFor(sub), matches: (p) => p.subreddit === sub }))
+function groupsFor(selected, dated) {
+  if (selected.length > 0) {
+    return selected.map((sub) => ({
+      key: sub,
+      color: colorFor(sub),
+      matches: (p) => p.subreddit === sub,
+    }))
   }
   return allThemes
     .filter((t) => dated.some((p) => p.theme === t))
     .map((t) => ({ key: t.name, color: t.color, matches: (p) => p.theme === t }))
 }
 
-export default function Timeline({ posts, focus, year, onYear, onClear }) {
+export default function Timeline({ posts, selected, year, onYear, onClear }) {
   const [mode, setMode] = useState('count')
 
   const dated = posts.filter((p) => p.year != null)
   const first = Math.min(...dated.map((p) => p.year))
   const last = Math.max(...dated.map((p) => p.year))
   const years = Array.from({ length: last - first + 1 }, (_, i) => first + i)
-  const groups = groupsFor(focus, dated)
+  const groups = groupsFor(selected, dated)
+  const filtering = selected.length > 0
 
   const columns = years.map((y) => {
     const inYear = dated.filter((p) => p.year === y)
@@ -93,11 +83,11 @@ export default function Timeline({ posts, focus, year, onYear, onClear }) {
               onClick={() => onYear(col.year)}
             >
               <title>
-                {col.year}: {focus ? `${col.matched} of ` : ''}
+                {col.year}: {filtering ? `${col.matched} of ` : ''}
                 {col.total} posts
               </title>
               <rect x={i * colWidth} y={0} width={colWidth} height={HEIGHT} fill="transparent" />
-              {focus && (
+              {filtering && (
                 <rect
                   x={x}
                   y={HEIGHT - fullHeight}
@@ -142,7 +132,7 @@ export default function Timeline({ posts, focus, year, onYear, onClear }) {
         ))}
       </div>
 
-      {focus?.kind !== 'subreddit' && (
+      {selected.length !== 1 && (
         <ul className="legend">
           {groups.map((g) => (
             <li key={g.key}>
