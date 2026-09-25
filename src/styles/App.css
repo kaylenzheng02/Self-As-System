@@ -53,18 +53,7 @@ button:focus-visible,
   border-radius: var(--radius);
 }
 
-/* Interest map */
-
-.map {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 32px;
-}
-
-.map-theme {
-  border-top: 4px solid var(--c);
-  padding-top: 8px;
-}
+/* Themes */
 
 .map-theme-name {
   display: flex;
@@ -135,18 +124,27 @@ button:focus-visible,
   font-style: italic;
 }
 
-/* Theme mix (pies) */
-
-.pie-grid {
+.theme-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
   gap: 32px;
 }
 
-.pie-card {
+.theme-card {
   min-width: 0;
   border-top: 4px solid var(--c);
   padding-top: 8px;
+}
+
+.theme-body {
+  display: grid;
+  grid-template-columns: 128px 1fr;
+  gap: 8px 16px;
+  align-items: center;
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .pie-title {
@@ -161,8 +159,8 @@ button:focus-visible,
 
 .pie-chart {
   display: block;
-  width: 110px;
-  height: 110px;
+  width: 128px;
+  height: 128px;
   max-width: 100%;
   margin: 0 auto;
 }
@@ -192,18 +190,9 @@ button:focus-visible,
 
 .pie-total {
   color: var(--text-h);
-  font-size: 34px;
+  font-size: 22px;
   font-weight: 600;
   line-height: 1;
-}
-
-.pie-selected {
-  margin: 6px 0 0;
-  min-height: 1.3em;
-  color: var(--text-h);
-  font-size: 12px;
-  text-align: center;
-  overflow-wrap: anywhere;
 }
 
 /* Timeline */

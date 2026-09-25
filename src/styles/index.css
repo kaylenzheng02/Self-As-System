@@ -4,7 +4,7 @@
   --bg: #fff;
   --border: #e5e4e7;
   --radius: 0;
-  --ring: #ff69b4;
+  --ring: var(--text-h);
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;

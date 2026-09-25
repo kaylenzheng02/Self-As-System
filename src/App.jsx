@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import upvotes from './data/reddit-upvotes.json'
 import { themeFor } from './data/themes'
-import InterestMap from './components/InterestMap'
 import ThemeChart from './components/ThemeChart'
 import Timeline from './components/Timeline'
 import PostList from './components/PostList'
@@ -50,18 +49,9 @@ function App() {
       <section className="panel">
         <h2>Themes</h2>
         <p className="hint">
-          Each theme broken down by subreddit. Click a theme or slice to filter the list
-          below.
+          {`Each theme’s share of posts upvoted${year != null ? ` in ${year}` : ''}. Click a slice or subreddit to filter the list below.`}
         </p>
         <ThemeChart posts={inYear} focus={focus} onFocus={toggleFocus} />
-      </section>
-
-      <section className="panel">
-        <h2>Topics of Interest</h2>
-        <p className="hint">
-          {`Counts are posts upvoted${year != null ? ` in ${year}` : ''}. A theme’s percentage is its share of these posts; a subreddit’s percentage is its share of that theme.`}
-        </p>
-        <InterestMap posts={inYear} focus={focus} onFocus={toggleFocus} />
       </section>
 
       <section className="panel">
